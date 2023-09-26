@@ -1,0 +1,99 @@
+#!/bin/bash
+
+#/var/spool/cron/crontabs
+
+function menu {
+	printf "1-Criar agenda\n"
+	printf "2-Criar evento\n"
+	printf "3-Listar evento\n"
+	printf "4-Deletar evento\n"
+	printf "5-Para adicionar email de alerta ou alterar\n"
+	printf "6-Sair\n"
+}
+
+#awk -F"," -f instruçoes.awk teste2
+#function lista(){
+    #echo $1
+    #sudo awk -F" " -f instruçoes.awk /var/spool/cron/crontabs/$1 
+
+#}
+
+function usuarios {
+	printf "Escolha um usuario para listar: \n"
+	sudo ls /var/spool/cron/crontabs
+}
+echo "Executando a agenda"
+
+usuarios
+
+read usuario
+
+menu
+echo -n "Digite a opção: "
+
+read opcao
+
+while [ $opcao -ge 1 ]
+do
+	case $opcao in
+	
+		1)
+			printf "\nCriar agenda\n"
+			sleep 3
+			crontab -e
+			printf "\n"
+			;;
+		2)
+			printf "\nCriar um evento\n"
+			
+	
+			printf "Digite o evento: "
+			read evento
+			echo "$evento"
+			
+			sudo sed -i '$s/$/\n/' /var/spool/cron/crontabs/"$usuario"
+			sudo sed -i  '$s|$|'"$evento"'|' /var/spool/cron/crontabs/"$usuario" 
+			sudo sed -i '$s/$/\n/' /var/spool/cron/crontabs/"$usuario" 
+			sudo sed -i '/^$/d' /var/spool/cron/crontabs/"$usuario"
+			;;
+
+		3)
+			printf "\nListar um evento\n"
+			printf "Escolha um usuario para listar:\n"
+			
+			
+
+			
+			sudo grep  "^[0-9]" ///var/spool/cron/crontabs/"$usuario"  
+			sudo grep  "^*" ///var/spool/cron/crontabs/"$usuario"  
+			;;
+		4)
+			printf "\nDeletar um evento\n"
+		
+			sudo grep -n "^[0-9]" ///var/spool/cron/crontabs/"$usuario"  
+			sudo grep -n "^*" ///var/spool/cron/crontabs/"$usuario" 
+			printf "\nEscolha o numero do evento que deseja deletar: "
+			read linha
+			sudo sed -i ""$linha"d" /var/spool/cron/crontabs/"$usuario"
+			;;
+		5) 
+			printf "Digite o E-mail no qual deseja ser notificado: "
+			read email 
+			Var=MAITO=
+			Varr=$Var"\"$email"\"
+			sudo sed -i '$s/$/\n/' /var/spool/cron/crontabs/"$usuario"
+			sudo sed -i '/^M/d' /var/spool/cron/crontabs/"$usuario"
+			sudo sed -i  '$s/$/'"$Varr"'/' /var/spool/cron/crontabs/"$usuario"
+			
+			;;
+			
+
+		*)
+			printf "Saindo...\n"
+			break
+			;;
+		esac
+	menu
+	read opcao
+
+done
